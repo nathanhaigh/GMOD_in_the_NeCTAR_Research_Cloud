@@ -23,8 +23,14 @@ sudo apt-get install -y libbio-samtools-perl amap-align apache2 apache2-mpm-work
 ###############################################################################
 # Configuring postgres ########################################################
 ###############################################################################
-
-
+#config postgres
 sudo ./postgres_conf.sh
 
+#re-start postgres
+sudo /etc/init.d/postgresql restart
 
+###############################################################################
+# Install additional dependencies #############################################
+###############################################################################
+
+sudo apt-get install --yes xsltproc libgo-perl libdbix-dbschema-perl libdbix-dbstag-perl
