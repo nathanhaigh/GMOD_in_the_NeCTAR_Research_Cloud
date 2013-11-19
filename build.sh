@@ -4,6 +4,7 @@
 ###############################################################################
 
 # Install a working version of GBrowse
+# based on a modified version of: https://github.com/scottcain/GMODintheCloud/blob/master/GitC2_build
 
 ###############################################################################
 # Make sure everything is up to date before starting ##########################
@@ -34,3 +35,80 @@ sudo /etc/init.d/postgresql restart
 ###############################################################################
 
 sudo apt-get install --yes xsltproc libgo-perl libdbix-dbschema-perl libdbix-dbstag-perl
+
+
+###############################################################################
+# Update the bashrc file ######################################################
+###############################################################################
+
+sudo cat modify_paths_file.txt >> ~/.bashrc
+
+
+###############################################################################
+# Install some perl modules and dependencies ##################################
+###############################################################################
+
+#First download a standalone copy of cpanm, that will allow us to automate the installation of the modules
+sudo curl -LO http://xrl.us/cpanm
+sudo chmod +x cpanm
+
+#install modules
+./cpanm --sudo -q Bio::Graphics
+./cpanm --sudo -q Parse::Apache::ServerStatus
+
+sudo apt-get --yes install unzip libpng-dev libssl-dev
+
+
+###############################################################################
+# Make Kent ###################################################################
+###############################################################################
+
+mkdir sources
+cd sources
+wget http://hgdownload.cse.ucsc.edu/admin/jksrc.zip
+unzip jksrc.zip
+cd kent/src/lib/
+
+#not sure about this one
+export    MACHTYPE=i686
+
+# add the CFLAGS=-fPIC line to the file kent/src/ind/common.mk
+sed -i .bk 's/\(^CC=.*$\)/\1'$'\\\nCFLAGS=-fPIC/g' common.mk
+
+make
+
+#create a environment variable for the Kent source directory
+export KENT_SRC=/home/ubuntu/sources/kent/src
+
+###############################################################################
+# Install Interface to bigwig and bigbed files ################################
+###############################################################################
+
+./cpanm --sudo -q Bio::DB::BigFile
+
+###############################################################################
+# Install Php #################################################################
+###############################################################################
+
+sudo apt-get --yes install php5 php5-pgsql php5-gd git
+
+###############################################################################
+# Enable the Apache rewrite module and restart ################################
+###############################################################################
+
+sudo a2enmod rewrite
+
+sudo /etc/init.d/apache2 restart
+
+###############################################################################
+# Install Drupal ##############################################################
+###############################################################################
+
+cd ~/sources
+wget http://ftp.drupal.org/files/projects/drupal-6.28.tar.gz
+tar zxvf drupal-6.28.tar.gz
+sudo mv drupal-6.28/* drupal-6.28/.htaccess /var/www/
+cd /var/www
+sudo cp sites/default/default.settings.php sites/default/settings.php
+sudo chmod o+w sites/default/settings.php
+chmod o+w sites/default

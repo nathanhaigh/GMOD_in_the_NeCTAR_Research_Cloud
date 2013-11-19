@@ -1,0 +1,9 @@
+###############################################################################
+### Modifications introduced while installing GMOD in the Cloud ###############
+###############################################################################
+
+#Setting appropriate paths
+export GMOD_ROOT=/usr/local/gmod
+export CHADO_DB_NAME=drupal
+
+###############################################################################
